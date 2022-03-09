@@ -1,13 +1,12 @@
 
-const express = require('express');
 const bcrypt = require('bcrypt');
 const base64 = require('base-64');
-const {Users}=require('../models/index.js');
-const router = express.Router();
+const {Users}=require('../../models/index.js');
 
-router.post('/signin',signinFunc);
 
-async function signinFunc(req,res) {
+
+
+async function basicAuth(req,res,next) {
 
     if(req.headers['authorization']) {
 
@@ -27,14 +26,14 @@ async function signinFunc(req,res) {
             const user = await Users.findOne({where:{username:username}});
             const valid = await bcrypt.compare(password,user.password);
             if(valid) {
-                res.status(200).json({username:username})
+                next()
             } else {
-                res.send('user is not valid')
+                next('user is not valid')
             }
         } catch(error) {
-            res.send(error)
+            next(error.message);
         }
     }
 }
 
-module.exports = router;
+module.exports = basicAuth;

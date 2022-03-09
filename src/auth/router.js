@@ -1,12 +1,17 @@
 'use strict';
 
-const express = require('express');
+const express =require ('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const {Users}=require('../models/index.js');
 
-router.post('/signup',signupFunc);
+const basicAuth = require('./middleware/basicAuth');
 
+
+
+
+router.post('/signup',signupFunc);
+router.post ('/signin',basicAuth,signinFunc)
 
 async function signupFunc(req, res) {
     let { username, password } = req.body;
@@ -27,4 +32,9 @@ async function signupFunc(req, res) {
         console.log(error)
     }
 }
-module.exports = router;
+
+async function signinFunc(req,res){
+    res.status(200).send(req.user)
+}
+
+module.exports =router;
